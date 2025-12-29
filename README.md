@@ -16,14 +16,14 @@ A robust Python tool that monitors internet connectivity and automatically switc
 ## What's Configurable
 | Function | Purpose |
 |----------|---------|
-| `NTP_SERVER` | server to ping | 
+| `NTP_SERVER` | server to pingm, can be anythin | 
 | `PRIMARY_WIFI` | Priority 1 - Preferred |
 | `SECONDARY_WIFI` | Priority 2 - Fallback |
 | `FALLBACK_WIFI` | Priority 3 - Last resort |
 | `PING_INTERVAL` | seconds between ping attempts |
 | `PING_TIMEOUT` | timeout for each ping (in seconds) |
 | `RETRY_PRIMARY_INTERVAL` | Retry primary WiFi every (in seconds) |
-| `TELEGRAM_CHAT_IDS` | Telegram chat IDs to send (can be multiple, separated by comma. Group chats starts with "-") |
+| `TELEGRAM_CHAT_IDS` | Telegram chat IDs to send (can be multiple, separated by comma. Group chats starts with "-"). See setup.md for further info |
 | `TOTAL_PING` | Total pings per check |
 | `MAX_FAILED_PINGS` | Max failed pings to consider connection lost |
 
