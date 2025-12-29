@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-netchange version 1.1.0
+netchange
 =============================
 
 Internet connection monitor with WiFi auto-connect and Telegram notification.
@@ -18,6 +18,7 @@ import threading
 import json
 
 # ===== CONFIGURATION =====
+VERSION = "1.1.1"
 NTP_SERVER = "pool.ntp.org"
 PRIMARY_WIFI = "PRIMARY_WIFI_NAME"          # Priority 1 - Preferred
 SECONDARY_WIFI = "SECONDARY_WIFI_NAME"      # Priority 2 - Fallback
@@ -25,7 +26,7 @@ FALLBACK_WIFI = "FALLBACK_WIFI_NAME"        # Priority 3 - Last resort
 PING_INTERVAL = 300                         # seconds between ping attempts
 PING_TIMEOUT = 5                            # timeout for each ping
 RETRY_PRIMARY_INTERVAL = 3600 * 3           # Retry primary WiFi every 3 hours (in seconds)
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"  # Replace with your bot token
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN_NETCHANGE")
 TELEGRAM_CHAT_IDS = [
     # "YOUR_CHAT_ID_1",
     # "YOUR_CHAT_ID_2",
@@ -381,7 +382,7 @@ def get_current_wifi():
 def main():
     """Main monitoring loop."""
     print("=" * 60)
-    print("Internet Connection Monitor")
+    print(f"Internet Connection Monitor (v{VERSION})")
     print(f"Monitoring: {NTP_SERVER}")
     print(f"Primary WiFi: {PRIMARY_WIFI}")
     print(f"Secondary WiFi: {SECONDARY_WIFI}")
@@ -390,6 +391,7 @@ def main():
     print(f"Retry Primary Every: {RETRY_PRIMARY_INTERVAL // 3600} hours")
     print(f"Ping Strategy: {TOTAL_PING} consecutive pings per check")
     print(f"WiFi Switch Trigger: {MAX_FAILED_PINGS} or more failed pings (out of {TOTAL_PING})")
+    print("Token loaded:", bool(os.getenv("TELEGRAM_BOT_TOKEN_NETCHANGE")))         # checks if telegram bot token is loaded correctly from /etc/netchange.env
     print("=" * 60)
     print()
     

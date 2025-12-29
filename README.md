@@ -13,101 +13,6 @@ A robust Python tool that monitors internet connectivity and automatically switc
 ✅ **Systemd Integration** - Run as Linux background service  
 ✅ **Cross-Platform** - Windows (netsh) and Linux (nmcli) support  
 
-## Configuration
-
-### 1. WiFi Networks
-
-Edit the WiFi configuration in `netchange.py`:
-
-```python
-PRIMARY_WIFI = "PRIMARY_WIFI_NAME"      # Priority 1 - Preferred
-SECONDARY_WIFI = "SECONDARY_WIFI_NAME"  # Priority 2 - Fallback
-FALLBACK_WIFI = "FALLBACK_WIFI_NAME"    # Priority 3 - Last resort
-```
-
-The tool tries them in this order when connection is lost.
-
-### 2. Telegram Bot Setup
-
-1. Create a bot with [@BotFather](https://t.me/botfather) on Telegram
-2. Get your bot token
-3. Create or get your chat group IDs
-4. Update configuration:
-
-```python
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
-TELEGRAM_CHAT_IDS = [
-    # "YOUR_CHAT_ID_1",
-    # "YOUR_CHAT_ID_2",
-    # "YOUR_CHAT_ID_3",
-]
-```
-
-### 3. Timing Configuration
-
-```python
-PING_INTERVAL = 300              # Check interval: 5 minutes
-PING_TIMEOUT = 5                 # Ping timeout: 5 seconds each
-RETRY_PRIMARY_INTERVAL = 3600*3  # Retry primary WiFi: every 3 hours
-```
-
-## Installation
-
-### Requirements
-- Python 3.6+
-- `requests` library
-- Linux: `nmcli` (NetworkManager)
-- Windows: `netsh` (built-in)
-
-### Install Dependencies
-
-```bash
-pip install requests
-```
-
-### Copy the file in the /opt/netchange
-
-Create folder in the /opt folder named netchange
-
-```bash
-sudo mkdir /opt/netchange
-``` 
-
-### Linux Systemd Service Setup
-
-Create `/etc/systemd/system/netchange.service`:
-
-```ini
-[Unit]
-Description=Internet Connection Monitor with WiFi Auto-Switch
-After=network.target
-
-[Service]
-Type=simple
-User="your username"
-WorkingDirectory=/opt/netchange
-ExecStart=/usr/bin/python3 -u /opt/netchange/netchange.py
-Restart=always
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-Environment="PYTHONUNBUFFERED=1" # This will show all the journalctl instead of the general status
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable netchange
-sudo systemctl start netchange
-
-# View logs
-journalctl -u netchange -f
-```
-
 ## How It Works
 
 ### Monitoring Cycle (Every 5 minutes)
@@ -171,7 +76,7 @@ journalctl -u netchange -f        # View live logs
 
 ```
 ============================================================
-Internet Connection Monitor
+Internet Connection Monitor (v1.1.1)
 Monitoring: pool.ntp.org
 Primary WiFi: wifi 1
 Secondary WiFi: wifi 2
@@ -180,6 +85,7 @@ Ping Interval: 300 seconds
 Retry Primary Every: 3 hours
 Ping Strategy: 10 consecutive pings per check
 WiFi Switch Trigger: 5 or more failed pings (out of 10)
+Token loaded: True
 ============================================================
 
 [2025-12-29 14:30:45] ✓ Connected (WiFi: wifi 1)

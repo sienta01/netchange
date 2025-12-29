@@ -32,6 +32,22 @@ pip install requests
 3. Send `/newbot`
 4. Follow the prompts to create a new bot
 5. Copy the **Bot Token** (format: `123456789:ABCDefGHijKLmnoPQRstUVwxyz`)
+6. Create OS environment variable
+
+```bash
+sudo nano /etc/netchange.env
+```
+
+7. insert this line:
+```ini
+TELEGRAM_BOT_TOKEN_NETCHANGE="your bot token, without the quotation marks"
+```
+
+update the ownership
+```bash
+sudo chmod 600 /etc/netchange.env
+sudo chown root:root /etc/netchange.env
+```
 
 ### 2. Get Your Telegram Chat ID
 
@@ -53,7 +69,6 @@ Edit `netchange.py` and replace:
 PRIMARY_WIFI = "PRIMARY_WIFI_NAME"      # Priority 1 - Preferred
 SECONDARY_WIFI = "SECONDARY_WIFI_NAME"  # Priority 2 - Fallback
 FALLBACK_WIFI = "FALLBACK_WIFI_NAME"    # Priority 3 - Last resort
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
 TELEGRAM_CHAT_IDS = [
     # "YOUR_CHAT_ID_1",
     # "YOUR_CHAT_ID_2",
@@ -97,12 +112,13 @@ After=network.target
 Type=simple
 User="your username"
 WorkingDirectory=/opt/netchange
+Environment="PYTHONUNBUFFERED=1"        # This will show all the journalctl instead of the general status
+EnvironmentFile=/etc/netchange.env
 ExecStart=/usr/bin/python3 -u /opt/netchange/netchange.py
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment="PYTHONUNBUFFERED=1" # This will show all the journalctl instead of the general status
 
 [Install]
 WantedBy=multi-user.target
