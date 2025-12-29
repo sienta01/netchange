@@ -13,6 +13,20 @@ A robust Python tool that monitors internet connectivity and automatically switc
 ✅ **Systemd Integration** - Run as Linux background service  
 ✅ **Cross-Platform** - Windows (netsh) and Linux (nmcli) support  
 
+## What's Configurable
+| Function | Purpose |
+|----------|---------|
+| `NTP_SERVER` | server to ping | 
+| `PRIMARY_WIFI` | Priority 1 - Preferred |
+| `SECONDARY_WIFI` | Priority 2 - Fallback |
+| `FALLBACK_WIFI` | Priority 3 - Last resort |
+| `PING_INTERVAL` | seconds between ping attempts |
+| `PING_TIMEOUT` | timeout for each ping (in seconds) |
+| `RETRY_PRIMARY_INTERVAL` | Retry primary WiFi every (in seconds) |
+| `TELEGRAM_CHAT_IDS` | Telegram chat IDs to send (can be multiple, separated by comma. Group chats starts with "-") |
+| `TOTAL_PING` | Total pings per check |
+| `MAX_FAILED_PINGS` | Max failed pings to consider connection lost |
+
 ## How It Works
 
 ### Monitoring Cycle (Every 5 minutes)
