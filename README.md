@@ -292,8 +292,7 @@ Both threads handle their own messaging independently.
 netchange/
 ├── netchange.py      # Main application
 ├── README.md         # This file
-├── SETUP.md          # Additional setup notes
-└── netchange.sh      # Optional shell wrapper
+└── SETUP.md          # Additional setup notes
 ```
 
 ## License
