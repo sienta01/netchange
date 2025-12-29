@@ -96,7 +96,7 @@ After=network.target
 [Service]
 Type=simple
 User="your username"
-WorkingDirectory=/home/"your username"/netchange
+WorkingDirectory=/opt/netchange
 ExecStart=/usr/bin/python3 -u /opt/netchange/netchange.py
 Restart=always
 RestartSec=10
