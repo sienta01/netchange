@@ -25,7 +25,7 @@ SECONDARY_WIFI = "SECONDARY_WIFI_NAME"      # Priority 2 - Fallback
 FALLBACK_WIFI = "FALLBACK_WIFI_NAME"        # Priority 3 - Last resort
 PING_INTERVAL = 300                         # seconds between ping attempts
 PING_TIMEOUT = 5                            # timeout for each ping
-RETRY_PRIMARY_INTERVAL = 3600 * 3           # Retry primary WiFi every 3 hours (in seconds)
+RETRY_PRIMARY_INTERVAL = 3600 * 1           # Retry primary WiFi every n hours (in seconds)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN_NETCHANGE")
 TELEGRAM_CHAT_IDS = [
     # "YOUR_CHAT_ID_1",
@@ -37,6 +37,15 @@ MAX_FAILED_PINGS = 10                       # Max failed pings to consider conne
 
 # Message queue for pending notifications (store when offline, send when online)
 pending_messages = []
+
+# ===== HEADER =====
+print("=" * 60)
+print(f"Internet Connection Monitor (v{VERSION})")
+print("=" * 60)
+
+# Check if Telegram Bot Token is loaded properly from /etc/netchange.env
+print("Token loaded:", bool(os.getenv("TELEGRAM_BOT_TOKEN_NETCHANGE")))
+
 
 # ===== TELEGRAM FUNCTIONS =====
 def send_telegram_message(message, skip_queue=False):
@@ -127,7 +136,7 @@ def handle_telegram_commands():
         return
     
     update_id = None
-    print("[*] Telegram command listener started")
+    print("[*] Telegram command listener started\n")
     
     try:
         while True:
@@ -315,7 +324,7 @@ def check_internet_connection(total_pings=TOTAL_PING, max_failed_pings=MAX_FAILE
 def wifi_rescan():
     try:
         subprocess.run(
-            ["nmcli", "device", "wifi", "rescan"],
+            ["sudo","nmcli", "device", "wifi", "rescan"],
             capture_output=True,
             text=True,
             timeout=15,
@@ -399,7 +408,6 @@ def get_current_wifi():
 def main():
     """Main monitoring loop."""
     print("=" * 60)
-    print(f"Internet Connection Monitor (v{VERSION})")
     print(f"Monitoring: {NTP_SERVER}")
     print(f"Primary WiFi: {PRIMARY_WIFI}")
     print(f"Secondary WiFi: {SECONDARY_WIFI}")
@@ -408,7 +416,6 @@ def main():
     print(f"Retry Primary Every: {RETRY_PRIMARY_INTERVAL // 3600} hours")
     print(f"Ping Strategy: {TOTAL_PING} consecutive pings per check")
     print(f"WiFi Switch Trigger: {MAX_FAILED_PINGS} or more failed pings (out of {TOTAL_PING})")
-    print("Token loaded:", bool(os.getenv("TELEGRAM_BOT_TOKEN_NETCHANGE")))         # checks if telegram bot token is loaded correctly from /etc/netchange.env
     print("=" * 60)
     print()
     

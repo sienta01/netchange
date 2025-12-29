@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.2.1] – 2025-12-30
+
+### 🔄 Changed
+- Banner rearranged to look neater
+
+### 🛠 Fixed
+- Fixed SSID re-scan previledge (sudo)
+
+---
+
 ## [1.2.0] – 2025-12-29
 
 ### 🛠 Fixed
