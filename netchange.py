@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
+netchange version 1.1.0
+=============================
+
 Internet connection monitor with WiFi auto-connect and Telegram notification.
-Pings pool.ntp.org to check internet connectivity.
+Pings specified server to check internet connectivity.
 If connection is lost, change WiFi and sends Telegram notification.
 """
 
@@ -22,14 +25,14 @@ FALLBACK_WIFI = "FALLBACK_WIFI_NAME"        # Priority 3 - Last resort
 PING_INTERVAL = 300                         # seconds between ping attempts
 PING_TIMEOUT = 5                            # timeout for each ping
 RETRY_PRIMARY_INTERVAL = 3600 * 3           # Retry primary WiFi every 3 hours (in seconds)
-
-# Telegram Bot Configuration
 TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"  # Replace with your bot token
 TELEGRAM_CHAT_IDS = [
     # "YOUR_CHAT_ID_1",
     # "YOUR_CHAT_ID_2",
     # "YOUR_CHAT_ID_3",
 ]
+TOTAL_PING = 20                             # Total pings per check
+MAX_FAILED_PINGS = 10                       # Max failed pings to consider connection lost
 
 # Message queue for pending notifications (store when offline, send when online)
 pending_messages = []
@@ -260,51 +263,52 @@ def handle_telegram_commands():
         print(f"[✗] Telegram command listener error: {e}")
 
 # ===== INTERNET CHECK FUNCTIONS =====
-def check_internet_connection(consecutive_pings=10):
-    """
-    Check if there's an internet connection by pinging pool.ntp.org multiple times.
-    Sends 'consecutive_pings' number of ping attempts and returns True if at least 
-    6 out of 10 succeed (i.e., 5 or fewer failures).
-    Returns True if connection is good, False if 5+ pings fail.
-    """
-    if consecutive_pings < 1:
-        consecutive_pings = 10
-    
+def check_internet_connection(total_pings=TOTAL_PING, max_failed_pings=MAX_FAILED_PINGS):
+
+    # Safety guards
+    if total_pings < 1:
+        total_pings = 1
+
+    if max_failed_pings < 0:
+        max_failed_pings = 0
+
+    if max_failed_pings > total_pings:
+        max_failed_pings = total_pings
+
     failed_pings = 0
-    
-    for i in range(consecutive_pings):
+
+    for i in range(total_pings):
         try:
-            # For Windows
             if sys.platform == "win32":
                 result = subprocess.run(
                     ["ping", "-n", "1", "-w", str(PING_TIMEOUT * 1000), NTP_SERVER],
                     capture_output=True,
                     timeout=PING_TIMEOUT + 2
                 )
-            # For Linux/Mac
             else:
                 result = subprocess.run(
                     ["ping", "-c", "1", "-W", str(PING_TIMEOUT), NTP_SERVER],
                     capture_output=True,
                     timeout=PING_TIMEOUT + 2
                 )
-            
+
             if result.returncode != 0:
                 failed_pings += 1
-        except Exception as e:
+
+        except Exception:
             failed_pings += 1
-            print(f"[✗] Error in ping attempt {i+1}/{consecutive_pings}: {e}")
-        
-        # Early exit if we already have 5 failures
-        if failed_pings >= 5:
-            print(f"[✗] Ping failed ({failed_pings}/10 failures detected)")
+
+        # Early exit if failure threshold reached
+        if failed_pings >= max_failed_pings:
+            print(f"[✗] Ping failed ({failed_pings}/{total_pings} failures)")
             return False
-    
-    # If we get here, we have 4 or fewer failures (at least 6 successes)
+
+    # Reached end → internet OK
     if failed_pings > 0:
-        print(f"[⚠] Ping results: {consecutive_pings - failed_pings}/{consecutive_pings} successful")
-    
+        print(f"[i] Ping results: {total_pings - failed_pings}/{total_pings} successful")
+
     return True
+
 
 # ===== WIFI FUNCTIONS =====
 def connect_to_wifi(ssid):
@@ -374,7 +378,6 @@ def get_current_wifi():
         print(f"[✗] Error getting current WiFi: {e}")
         return None
 
-# ===== MAIN MONITORING LOOP =====
 def main():
     """Main monitoring loop."""
     print("=" * 60)
@@ -385,8 +388,8 @@ def main():
     print(f"Fallback WiFi: {FALLBACK_WIFI}")
     print(f"Ping Interval: {PING_INTERVAL} seconds")
     print(f"Retry Primary Every: {RETRY_PRIMARY_INTERVAL // 3600} hours")
-    print("Ping Strategy: 10 consecutive pings per check")
-    print("WiFi Switch Trigger: 5 or more failed pings (out of 10)")
+    print(f"Ping Strategy: {TOTAL_PING} consecutive pings per check")
+    print(f"WiFi Switch Trigger: {MAX_FAILED_PINGS} or more failed pings (out of {TOTAL_PING})")
     print("=" * 60)
     print()
     
