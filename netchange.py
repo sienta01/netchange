@@ -18,7 +18,7 @@ import threading
 import json
 
 # ===== CONFIGURATION =====
-VERSION = "1.1.1"
+VERSION = "1.2.0"
 NTP_SERVER = "pool.ntp.org"
 PRIMARY_WIFI = "PRIMARY_WIFI_NAME"          # Priority 1 - Preferred
 SECONDARY_WIFI = "SECONDARY_WIFI_NAME"      # Priority 2 - Fallback
@@ -312,6 +312,21 @@ def check_internet_connection(total_pings=TOTAL_PING, max_failed_pings=MAX_FAILE
 
 
 # ===== WIFI FUNCTIONS =====
+def wifi_rescan():
+    try:
+        subprocess.run(
+            ["nmcli", "device", "wifi", "rescan"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=True
+        )
+        print("🔄 Wi-Fi networks rescanned")
+    except subprocess.TimeoutExpired:
+        print("⚠️ Wi-Fi rescan timed out")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️ Wi-Fi rescan failed: {e.stderr.strip()}")
+
 def connect_to_wifi(ssid):
     """
     Connect to a WiFi network.
@@ -336,6 +351,8 @@ def connect_to_wifi(ssid):
                 return False
         else:
             # Linux - uses nmcli (requires sudo)
+            # Rescan WiFi networks before connecting
+            wifi_rescan()
             cmd = ["sudo", "nmcli", "device", "wifi", "connect", ssid]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             

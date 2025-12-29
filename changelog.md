@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.2.0] – 2025-12-29
+
+### 🛠 Fixed
+- Added Wi-Fi rescan before switching to prevent no SSID found
+
+---
+
 ## [1.1.1] – 2025-12-29
 
 ### ✨ Added
