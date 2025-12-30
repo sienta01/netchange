@@ -18,7 +18,7 @@ import threading
 import json
 
 # ===== CONFIGURATION =====
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 NTP_SERVER = "pool.ntp.org"
 PRIMARY_WIFI = "PRIMARY_WIFI_NAME"          # Priority 1 - Preferred
 SECONDARY_WIFI = "SECONDARY_WIFI_NAME"      # Priority 2 - Fallback

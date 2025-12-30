@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.3.1] – 2025-12-30
+## [1.3.0] – 2025-12-30
 
 ### 🛠 Fixed
 - Fixed SSID re-scan. Now waits 10 seconds for network to appear
