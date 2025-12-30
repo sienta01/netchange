@@ -221,7 +221,7 @@ def handle_telegram_commands():
                                 print(f"[✗] Error sending 'checking' message: {e}")
                             
                             # Perform the actual check
-                            is_connected = check_internet_connection(consecutive_pings=10)
+                            is_connected = check_internet_connection()
                             current_ssid = get_current_wifi()
                             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             
@@ -362,6 +362,7 @@ def connect_to_wifi(ssid):
             # Linux - uses nmcli (requires sudo)
             # Rescan WiFi networks before connecting
             wifi_rescan()
+            time.sleep(10) # Wait a bit after rescan for networks to appear
             cmd = ["sudo", "nmcli", "device", "wifi", "connect", ssid]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             
@@ -428,8 +429,8 @@ def main():
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             current_time = time.time()
             
-            # Check internet connection with 10 consecutive pings
-            is_connected = check_internet_connection(consecutive_pings=10)
+            # Check internet connection status
+            is_connected = check_internet_connection()
             current_ssid = get_current_wifi()
             
             # Check if it's time to retry primary WiFi
@@ -459,7 +460,7 @@ def main():
                         if current_ssid == PRIMARY_WIFI:
                             # Check if primary WiFi has internet
                             time.sleep(2)
-                            if check_internet_connection(consecutive_pings=10):
+                            if check_internet_connection():
                                 print(f"[{timestamp}] ✓ Switched to {PRIMARY_WIFI} with internet!")
                                 message = f"✅ Successfully switched to {PRIMARY_WIFI}!\nTime: {timestamp}"
                                 send_telegram_message(message)
@@ -507,7 +508,7 @@ def main():
                             
                             if current_ssid == wifi_ssid:
                                 time.sleep(2)
-                                if check_internet_connection(consecutive_pings=10):
+                                if check_internet_connection():
                                     print(f"[{timestamp}] ✓ Connected to {wifi_ssid}")
                                     message = f"✅ Connected to {wifi_ssid}!\nTime: {timestamp}"
                                     send_telegram_message(message, skip_queue=True)
